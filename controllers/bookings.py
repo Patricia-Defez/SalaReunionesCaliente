@@ -14,15 +14,15 @@ class InvalidTimingException(Exception):
 class BookingController:
     def __init__(self):
         self.booking_db = BookingDO
-        self.rc = RoomController()
-        self.cc = ClientController()
 
     def _check_room(self, roomId):
-        room = self.rc.get_room_by_id(roomId)
+        rc = RoomController()
+        room = rc.get_room_by_id(roomId)
         return room
 
     def _check_client(self, clientId):
-        client = self.cc.get_client_by_id(clientId)
+        cc = ClientController()
+        client = cc.get_client_by_id(clientId)
         return client
     
     def _check_timing(self, initHour, endHour, room):
@@ -50,12 +50,47 @@ class BookingController:
         if not room:
             raise NoRoomException
         client = self._check_client(booking.get("idClient"))
+        correctTiming = self._check_timing(booking["initHour"],booking["endHour"], room)
         if not client:
             raise NoClientException
-        correctTiming = self._check_timing(booking["initHour"],booking["endHour"], room)
-        if not correctTiming:
+        elif not correctTiming:
             raise InvalidTimingException
-        booking["totalH"] = booking["endHour"]- booking["initHour"]
-        new_booking = self.booking_db.insert_one(booking)
-        return self.get_booking_by_id(new_booking.inserted_id)
+        else:
+            booking["totalH"] = booking["endHour"]- booking["initHour"]
+            new_booking = self.booking_db.insert_one(booking)
+            return self.get_booking_by_id(new_booking.inserted_id)
+        
+    def list_bookings(self):
+        filter = {}
+        res = list(self.booking_db.find(filter, limit=500))
+        for x in res:
+            x.pop("_id")
+        return res
+    
+    def list_bookings_by_client_id(self, clientId):
+        client = self._check_client(clientId)
+        if not client:
+            raise NoClientException
+        else:
+            filter = {"idClient": clientId}
+            res = list(self.booking_db.find(filter, limit=500))
+            for x in res:
+                x.pop("_id")
+            return res
+        
+    def list_bookings_by_room_id(self, roomId):
+        room = self._check_room(roomId)
+        if not room:
+            raise NoRoomException
+        else:
+            filter = {"idRoom": roomId}
+            res = list(self.booking_db.find(filter, limit=500))
+            for x in res:
+                x.pop("_id")
+            return res
+    
+    def get_bookings_by_clients(self):
+        res = self.booking_db.aggregate([{'$group':{'_id':'$idClient','totalBookings':{'$count':{}}}}])
+        return list(res)
+
 

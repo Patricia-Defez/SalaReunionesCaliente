@@ -12,8 +12,8 @@ def list_all_rooms():
     rooms = rc.list_rooms()
     return {'rooms': rooms, "count": len(rooms)}
 
-@room.get("/{id}", response_model=RoomModel)
-def get_room_by_Id(id):
+@room.get("/{id}/byId", response_model=RoomModel)
+def get_room_by_Id(id: str):
     rc = RoomController()
     room = rc.get_room_by_id(id)
     if room:
@@ -54,4 +54,24 @@ def create_new_room(room: RoomModel = Body(post_room_example)):
 
 @room.get("/usage")
 def get_rooms_usage():
-    return "usage"
+    rc = RoomController()
+    usages = rc.get_rooms_usage()
+    return usages
+
+@room.get("/{roomId}/room/{hour}/status")
+def get_room_status(roomId:str, hour:int):
+    rc = RoomController()
+    bookings = rc.get_room_status(roomId, hour)
+    if bookings:
+        status = {
+            "room": roomId,
+            "hour": hour,
+            "status": "booked"
+        }
+    else:
+        status = {
+            "room": roomId,
+            "hour": hour,
+            "status": "Not booked"
+        }
+    return status

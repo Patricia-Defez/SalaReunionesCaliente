@@ -1,4 +1,4 @@
-from config.db import RoomDO
+from config.db import RoomDO, BookingDO
 
 class InvalidTimingException(Exception):
     pass
@@ -9,6 +9,7 @@ class InvalidCapacityException(Exception):
 class RoomController:
     def __init__(self):
         self.room_db = RoomDO
+        self.booking_db = BookingDO
 
     def _check_timing(self, initHour, endHour):
         if initHour not in range(1,24):
@@ -54,3 +55,38 @@ class RoomController:
         room["totalH"]= room["closingH"]-room["openingH"]
         new_room = self.room_db.insert_one(room)
         return self.get_room_by_id(new_room.inserted_id)
+    
+    def get_rooms_usage(self):
+        filter = {}
+        project = {"_id":1,"totalH":1}
+        all_rooms = list(self.room_db.find(filter,project,limit=500))
+        booked_rooms = self.booking_db.aggregate([{'$group':{'_id':'$idRoom','totalUsage':{'$sum':'$totalH'}}}])
+        dicBR = {x["_id"]:x["totalUsage"]for x in booked_rooms}
+        usages = []
+        room = {}
+        for x in all_rooms:
+            if x["_id"] not in dicBR.keys():
+                room = {
+                    "id":x["_id"],
+                    "usage": "0%",
+                }
+            else:
+                room = {
+                    "id":x["_id"],
+                    "usage": str(round((100/x["totalH"])*dicBR[x["_id"]], 2))+"%",
+                }
+            usages.append(room)
+        return usages
+    
+    def get_room_status(self,roomId, hour):
+        filter = {"idRoom": roomId}
+        all_bookings = list(self.booking_db.find(filter, limit=500))
+        bookings= []
+        if not all_bookings:
+            return False
+        else:
+            for  x in all_bookings:
+                if hour in range(x["initHour"], x["endHour"]):
+                    bookings.append(x)
+            return bookings
+
