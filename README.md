@@ -37,7 +37,7 @@ With the venv activate:
    pip install pymongo
 ```
 ### Start server
-```uvicorn app:app --reload```
+```uvicorn app:app --reload```<br/>
 Uvicorn would be running on http://127.0.0.1:8000
 
    
