@@ -5,10 +5,9 @@ db = conn.baobad
 ClientDO = db.clients
 RoomDO = db.rooms
 BookingDO = db.bookings
-
+"""""
 cliente1 = {"_id": "c1", "name": "Tomas"}
 #x = ClientDO.insert_one(cliente1)
-#print(x.inserted_id)
 clients= [
     {"_id": "c2", "name": "Patri"},
     {"_id": "c3", "name": "Luis"},
@@ -21,10 +20,7 @@ clients= [
     {"_id": "c10", "name": "Luz"}
 ]
 #x = ClientDO.insert_many(clients)
-"""""
-res = ClientDO.find().sort("name")
-for x in res:
-    print(x)
+
 
 rooms = [
     {"_id": "r1", "openigH": 8, "closingH": 22, "capacity": 20, "totalH": 14},
@@ -35,7 +31,4 @@ rooms = [
 ]
 #x = RoomDO.insert_many(rooms)
 
-res = RoomDO.find()
-for x in res:
-    print(x)
     """""

@@ -10,7 +10,13 @@ room = APIRouter(prefix="/rooms", tags=["Rooms"])
 def list_all_rooms():
     rc = RoomController()
     rooms = rc.list_rooms()
-    return {'rooms': rooms, "count": len(rooms)}
+    if not rooms:
+        raise HTTPException(
+             status_code= 404,
+             detail= "No rooms found"
+        )
+    else:
+        return {'rooms': rooms, "count": len(rooms)}
 
 @room.get("/{id}/byId", response_model=RoomModel)
 def get_room_by_Id(id: str):
