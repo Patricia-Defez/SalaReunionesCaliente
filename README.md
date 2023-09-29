@@ -38,6 +38,7 @@ With the venv activate:
 ```
 ### Start server
 ```uvicorn app:app --reload```
+Uvicorn would be running on http://127.0.0.1:8000
 
    
    
