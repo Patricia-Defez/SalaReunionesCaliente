@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-conn = MongoClient("mongodb+srv://patri:1234@cluster0.rnpvw.mongodb.net/test")
+conn = MongoClient("your url")
 db = conn.baobad
 ClientDO = db.clients
 RoomDO = db.rooms
