@@ -93,4 +93,20 @@ class BookingController:
         res = self.booking_db.aggregate([{'$group':{'_id':'$idClient','totalBookings':{'$count':{}}}}])
         return list(res)
 
-
+    def list_overlapped_booking(self, roomId):
+        filter = {"idRoom": roomId}
+        all_bookings = list(self.booking_db.find(filter, limit=500))
+        bookings= []
+        uniques = []
+        if not all_bookings:
+            return False
+        else:
+            copy_bookings = all_bookings.copy()
+            for x in all_bookings:
+                x["_id"] = str(x.get('_id'))
+                for y in copy_bookings: 
+                    y["_id"] = str(y.get('_id'))
+                    if  x["initHour"] in range(y["initHour"], y["endHour"]) or  x["endHour"] in range(y["initHour"],y["endHour"]+1):
+                        bookings.append(x)
+            [uniques.append(x) for x in bookings if x not in uniques]
+            return uniques

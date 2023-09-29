@@ -100,6 +100,13 @@ def get_bookings_by_clients():
     
 @booking.get("/{roomId}/overlappedBookings")
 def list_overlapped_bookings(roomId: str):
-     bc = BookingController()
-     overlapped = []
-     return "overlapped"
+    bc = BookingController()
+    bookings = []
+    bookings = bc.list_overlapped_booking(roomId)
+    if not bookings:
+        raise HTTPException(
+             status_code= 404,
+             detail= "No bookings found"
+        )
+    else:  
+        return bookings
