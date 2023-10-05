@@ -7,9 +7,9 @@ from samples.rooms import post_room_example
 room = APIRouter(prefix="/rooms", tags=["Rooms"])
 
 @room.get("", response_model=ListRoomModel)
-def list_all_rooms():
+async def list_all_rooms():
     rc = RoomController()
-    rooms = rc.list_rooms()
+    rooms = await rc.list_rooms()
     if not rooms:
         raise HTTPException(
              status_code= 404,
@@ -19,9 +19,9 @@ def list_all_rooms():
         return {'rooms': rooms, "count": len(rooms)}
 
 @room.get("/{id}/byId", response_model=RoomModel)
-def get_room_by_Id(id: str):
+async def get_room_by_Id(id: str):
     rc = RoomController()
-    room = rc.get_room_by_id(id)
+    room = await rc.get_room_by_id(id)
     if room:
         return room
     else:
@@ -31,11 +31,11 @@ def get_room_by_Id(id: str):
         )
 
 @room.post("")
-def create_new_room(room: RoomModel = Body(post_room_example)):
+async def create_new_room(room: RoomModel = Body(post_room_example)):
     rc = RoomController()
     new_room = None
     try:
-        new_room = rc.insert_room(jsonable_encoder(room))
+        new_room = await rc.insert_room(jsonable_encoder(room))
         new_room.pop('_id', None)
         
     except Exception as e:
@@ -59,15 +59,15 @@ def create_new_room(room: RoomModel = Body(post_room_example)):
         return new_room
 
 @room.get("/usage")
-def get_rooms_usage():
+async def get_rooms_usage():
     rc = RoomController()
-    usages = rc.get_rooms_usage()
+    usages = await rc.get_rooms_usage()
     return usages
 
 @room.get("/{roomId}/room/{hour}/status")
-def get_room_status(roomId:str, hour:int):
+async def get_room_status(roomId:str, hour:int):
     rc = RoomController()
-    bookings = rc.get_room_status(roomId, hour)
+    bookings = await rc.get_room_status(roomId, hour)
     if bookings:
         status = {
             "room": roomId,

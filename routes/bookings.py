@@ -9,10 +9,10 @@ from samples.bookings import post_booking_example
 booking = APIRouter(prefix="/booking", tags=['Bookings'])
 
 @booking.get("", response_model= Union[ListBookingModel, None])
-def list_all_bookings():
+async def list_all_bookings():
     bc = BookingController()
     bookings = []
-    bookings = bc.list_bookings()
+    bookings = await bc.list_bookings()
     if not bookings:
         raise HTTPException(
              status_code= 404,
@@ -22,11 +22,11 @@ def list_all_bookings():
         return {'bookings': bookings, 'count': len(bookings)}
 
 @booking.post("")
-def create_new_booking(booking: BookingModel = Body(post_booking_example)):
+async def create_new_booking(booking: BookingModel = Body(post_booking_example)):
     bc = BookingController()
     new_booking = None
     try:
-        new_booking = bc.insert_booking(jsonable_encoder(booking))
+        new_booking = await bc.insert_booking(jsonable_encoder(booking))
         new_booking.pop('_id', None)
 
     except NoRoomException:
@@ -48,11 +48,11 @@ def create_new_booking(booking: BookingModel = Body(post_booking_example)):
         return new_booking
 
 @booking.get("/{clientId}/bookingsClient", response_model= Union[ListBookingModel, None])
-def list_bookings_by_client_id(clientId: str):
+async def list_bookings_by_client_id(clientId: str):
     bc = BookingController()
     bookings = []
     try:
-         bookings = bc.list_bookings_by_client_id(clientId)
+         bookings = await bc.list_bookings_by_client_id(clientId)
     except NoClientException:
         raise HTTPException(
                 status_code = 400,
@@ -67,11 +67,11 @@ def list_bookings_by_client_id(clientId: str):
         return {'bookings': bookings, 'count': len(bookings)}
 
 @booking.get("/{roomId}/bookingsRoom", response_model= Union[ListBookingModel, None])
-def list_bookings_by_room_id(roomId: str):
+async def list_bookings_by_room_id(roomId: str):
     bc = BookingController()
     bookings = []
     try:
-         bookings = bc.list_bookings_by_room_id(roomId)
+         bookings = await bc.list_bookings_by_room_id(roomId)
     except NoRoomException:
             raise HTTPException(
                 status_code = 400,
@@ -86,10 +86,10 @@ def list_bookings_by_room_id(roomId: str):
         return {'bookings': bookings, 'count': len(bookings)}
 
 @booking.get("/bookingsByClients")
-def get_bookings_by_clients():
+async def get_bookings_by_clients():
     bc = BookingController()
     aggregate = []
-    aggregate = bc.get_bookings_by_clients()
+    aggregate = await bc.get_bookings_by_clients()
     if not aggregate:
          raise HTTPException(
              status_code= 404,
@@ -99,10 +99,10 @@ def get_bookings_by_clients():
         return aggregate
     
 @booking.get("/{roomId}/overlappedBookings")
-def list_overlapped_bookings(roomId: str):
+async def list_overlapped_bookings(roomId: str):
     bc = BookingController()
     bookings = []
-    bookings = bc.list_overlapped_booking(roomId)
+    bookings = await bc.list_overlapped_booking(roomId)
     if not bookings:
         raise HTTPException(
              status_code= 404,

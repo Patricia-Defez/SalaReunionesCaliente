@@ -5,9 +5,9 @@ from controllers.clients import ClientController
 client = APIRouter(prefix="/clients", tags=['Clients'])
 
 @client.get("", response_model=ListUserModel)
-def get_clients():
+async def get_clients():
     cc= ClientController()
-    clients = cc.list_clients()
+    clients = await cc.list_clients()
     if not clients:
         raise HTTPException(
              status_code= 404,
