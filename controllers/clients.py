@@ -5,9 +5,10 @@ class ClientController:
     def __init__(self):
         self.client_db = ClientDO
 
-    def list_clients(self):
+    async def list_clients(self):
         filter ={}
-        res = list(self.client_db.find(filter,limit=500))
+        data = self.client_db.find(filter,limit=500)
+        res = await data.to_list(length=500)
         for x in res:
            x["id"] = x["_id"]
         return res

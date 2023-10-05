@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+#from pymongo import MongoClient
 import motor.motor_asyncio as motor
 
 #conn = MongoClient("mongodb+srv://patri:1234@cluster0.rnpvw.mongodb.net/test")
@@ -9,7 +9,7 @@ RoomDO = db.rooms
 BookingDO = db.bookings
 """""
 cliente1 = {"_id": "c1", "name": "Tomas"}
-#x = ClientDO.insert_one(cliente1)
+#x = await ClientDO.insert_one(cliente1)
 clients= [
     {"_id": "c2", "name": "Patri"},
     {"_id": "c3", "name": "Luis"},
@@ -21,7 +21,7 @@ clients= [
     {"_id": "c9", "name": "Daniel"},
     {"_id": "c10", "name": "Luz"}
 ]
-#x = ClientDO.insert_many(clients)
+#x = await ClientDO.insert_many(clients)
 
 
 rooms = [
@@ -31,6 +31,6 @@ rooms = [
     {"_id": "r4", "openigH": 9, "closingH": 20, "capacity": 50, "totalH": 11},
     {"_id": "r5", "openigH": 8, "closingH": 22, "capacity": 25, "totalH": 14},
 ]
-#x = RoomDO.insert_many(rooms)
+#x = await RoomDO.insert_many(rooms)
 
     """""
