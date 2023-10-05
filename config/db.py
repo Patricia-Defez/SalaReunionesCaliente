@@ -1,8 +1,7 @@
-#from pymongo import MongoClient
+
 import motor.motor_asyncio as motor
 
-#conn = MongoClient("mongodb+srv://patri:1234@cluster0.rnpvw.mongodb.net/test")
-conn = motor.AsyncIOMotorClient("mongodb+srv://patri:1234@cluster0.rnpvw.mongodb.net/test")
+conn = motor.AsyncIOMotorClient("your_connection")
 db = conn.baobad
 ClientDO = db.clients
 RoomDO = db.rooms
