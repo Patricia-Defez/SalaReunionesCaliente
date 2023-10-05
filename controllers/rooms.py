@@ -27,9 +27,10 @@ class RoomController:
         else:
             return True
 
-    def list_rooms(self):
+    async def list_rooms(self):
         filter = {}
-        res = list(self.room_db.find(filter,limit=500))
+        data = self.room_db.find(filter,limit=500)
+        res = await data.to_list(length=500)
         for x in res:
            x["id"] = x["_id"]
            x.pop("totalH")
@@ -45,7 +46,7 @@ class RoomController:
         else:
             return False
 
-    def insert_room(self, room):
+    async def insert_room(self, room):
         if not self._check_timing(room["openingH"], room["closingH"]):
             raise InvalidTimingException
         if not self._check_capacity(room["capacity"]):
@@ -53,14 +54,16 @@ class RoomController:
         room["_id"] = room["id"]
         room.pop("id")
         room["totalH"]= room["closingH"]-room["openingH"]
-        new_room = self.room_db.insert_one(room)
-        return self.get_room_by_id(new_room.inserted_id)
+        new_room = await self.room_db.insert_one(room)
+        return await self.get_room_by_id(new_room.inserted_id)
     
-    def get_rooms_usage(self):
+    async def get_rooms_usage(self):
         filter = {}
         project = {"_id":1,"totalH":1}
-        all_rooms = list(self.room_db.find(filter,project,limit=500))
-        booked_rooms = self.booking_db.aggregate([{'$group':{'_id':'$idRoom','totalUsage':{'$sum':'$totalH'}}}])
+        data_r = self.room_db.find(filter,project,limit=500)
+        all_rooms = await data_r.to_list(length=500)
+        data_br = self.booking_db.aggregate([{'$group':{'_id':'$idRoom','totalUsage':{'$sum':'$totalH'}}}])
+        booked_rooms = await data_br.to_list(length=500)
         dicBR = {x["_id"]:x["totalUsage"]for x in booked_rooms}
         usages = []
         room = {}
@@ -78,9 +81,10 @@ class RoomController:
             usages.append(room)
         return usages
     
-    def get_room_status(self,roomId, hour):
+    async def get_room_status(self,roomId, hour):
         filter = {"idRoom": roomId}
-        all_bookings = list(self.booking_db.find(filter, limit=500))
+        data = self.booking_db.find(filter, limit=500)
+        all_bookings = await data.to_list(length=500)
         bookings= []
         if not all_bookings:
             return False
