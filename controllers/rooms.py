@@ -35,9 +35,9 @@ class RoomController:
            x.pop("totalH")
         return res
     
-    def get_room_by_id(self, room_id):
+    async def get_room_by_id(self, room_id):
         filter = {"_id": room_id}
-        room = self.room_db.find_one(filter)
+        room = await self.room_db.find_one(filter)
         if room:
             room["id"] = room["_id"]
             room.pop("totalH")
